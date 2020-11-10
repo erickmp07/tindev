@@ -6,7 +6,7 @@ const routes = require('./routes');
 
 const server = express();
 
-mongoose.connect('mongodb+srv://erick:3pdtp3tt@cluster-tindev.kulmg.mongodb.net/tindevdb?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv:...', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
