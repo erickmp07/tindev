@@ -1,11 +1,8 @@
 const express = require('express');
+const routes = require('./routes');
 
 const server = express();
 
-server.get('/', (request, result) => {
-    return result.json({
-        message: `Hello ${request.query.name}`
-    });
-});
+server.use(routes);
 
 server.listen(3333);
