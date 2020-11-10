@@ -2,6 +2,23 @@ const axios = require('axios');
 const Dev = require('../models/Dev');
 
 module.exports = {
+    async index(request, response) {
+        const { user } = request.headers;
+
+        const loggedUser = await Dev.findById(user);
+
+        const users = await Dev.find({
+            $and: [
+                { _id: { $ne: user } },
+                { _id: { $nin: loggedUser.likes } },
+                { _id: { $nin: loggedUser.dislikes } },
+            ]
+        })
+        .sort({ _id: -1 });
+
+        return response.json(users);
+    },
+
     async store(request, response) {
         const { username } = request.body;
 
@@ -10,6 +27,8 @@ module.exports = {
         });
 
         if (userExists) {
+            console.log(`User ${username} already exists.`);
+
             return response.json(userExists);
         }
 
@@ -22,7 +41,9 @@ module.exports = {
             user: username,
             bio,
             avatar
-        })
+        });
+
+        console.log(`User ${username} created.`);
 
         return response.json(dev);
     }
