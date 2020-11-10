@@ -1,7 +1,11 @@
 const express = require('express');
+const mongoose = require('mongoose');
+
 const routes = require('./routes');
 
 const server = express();
+
+mongoose.connect('mongodb+srv://erick:3pdtp3tt@cluster-tindev.kulmg.mongodb.net/<dbname>?retryWrites=true&w=majority');
 
 server.use(routes);
 
