@@ -10,7 +10,7 @@ module.exports = {
 
         if (!targetDev) {
             return response.status(400).json({
-                error: 'Dev not exists.'
+                error: 'Dev not found.'
             });
         }
 
