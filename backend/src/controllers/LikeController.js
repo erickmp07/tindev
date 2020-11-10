@@ -14,13 +14,15 @@ module.exports = {
             });
         }
 
-        if (targetDev.likes.includes(loggedDev._id)) {
-            console.log('You got a Match!');
-        }
-
         loggedDev.likes.push(targetDev._id);
 
         await loggedDev.save();
+
+        console.log(`User ${loggedDev.user} liked ${targetDev.user}.`);
+
+        if (targetDev.likes.includes(loggedDev._id)) {
+            console.log('You got a Match!');
+        }
 
         return response.json(loggedDev);
     }
