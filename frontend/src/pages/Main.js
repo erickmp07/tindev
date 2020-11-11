@@ -31,7 +31,7 @@ export default function Main({ match }) {
             }
         });
 
-        setUsers(users.filter(user => user._id != id));
+        setUsers(users.filter(user => user._id !== id));
     }
 
     async function handleDislike(id) {
@@ -41,7 +41,7 @@ export default function Main({ match }) {
             }
         });
 
-        setUsers(users.filter(user => user._id != id));
+        setUsers(users.filter(user => user._id !== id));
     }
 
     return (
@@ -69,7 +69,7 @@ export default function Main({ match }) {
                     })}
                 </ul>
             ) : (
-                    <div className="empty">Acabou :(</div>
+                    <div className="empty">Sem devs no momento!</div>
                 )}
         </div>
     );
