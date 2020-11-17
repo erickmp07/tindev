@@ -40,9 +40,14 @@ export default function Login({ navigation }) {
                 placeholder="Digite seu usuário no Github"
                 placeholderTextColor="#999"
                 style={styles.input} 
+                value={user}
+                onChangeText={setUser}
             />
 
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity 
+                style={styles.button}
+                onPress={handleLogin}
+            >
                 <Text style={styles.buttonText}>Enviar</Text>
             </TouchableOpacity>
 

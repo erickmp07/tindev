@@ -1,19 +1,23 @@
-import React from 'react';
-import { Image, SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import api from '../services/api';
 
 import logo from '../assets/logo.png';
 import like from '../assets/like.png';
 import dislike from '../assets/dislike.png';
+import itsamatch from '../assets/itsamatch.png';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Main({ navigation }) {
-    const id = navigation.getParam('id');
+    const id = navigation.getParam('user');
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
         async function loadUsers() {
             const response = await api.get('/devs', {
                 headers: {
-                    user: match.params.id
+                    user: id
                 }
             });
 
@@ -21,45 +25,69 @@ export default function Main({ navigation }) {
         }
 
         loadUsers();
-    }, [match.params.id]);
+    }, [id]);
 
-    async function handleLike(id) {
-        await api.post(`/devs/${id}/likes`, null, {
+    async function handleLike() {
+        const [user, rest] = users;
+
+        await api.post(`/devs/${user._id}/likes`, null, {
             headers: {
-                user: match.params.id
+                user: id
             }
         });
 
-        setUsers(users.filter(user => user._id !== id));
+        setUsers(rest);
     }
 
-    async function handleDislike(id) {
-        await api.post(`/devs/${id}/dislikes`, null, {
+    async function handleDislike() {
+        const [user, rest] = users;
+
+        await api.post(`/devs/${user._id}/dislikes`, null, {
             headers: {
-                user: match.params.id
+                user: id
             }
         });
 
-        setUsers(users.filter(user => user._id !== id));
+        setUsers(rest);
+    }
+
+    async function handleLogout() {
+        await AsyncStorage.clear();
+
+        navigation.navigate('Login');
     }
 
     return (
         <SafeAreaView style={styles.container}>
-            <Image source={logo} />
+            <TouchableOpacity onPress={handleLogout}>
+                <Image style={styles.logo} source={logo} />
+            </TouchableOpacity>
 
             <View style={styles.cardsContainer}>
-                <View style={styles.card}>
-                    <Image source={styles.avatar} />
-                    <View style={styles.footer}>
-                        <Text style={styles.name}></Text>
-                        <Text style={styles.bio}></Text>
+                {users.map((user, index) => (
+                    <View key={user._id} style={[styles.card, { zIndex: users.length - index }]}>
+                        <Image style={styles.avatar} source={{ uri: user.avatar }} />
+
+                        <View style={styles.footer}>
+                            <Text style={styles.name}>{user.name}</Text>
+                            <Text numberOfLines={3} style={styles.bio}>{user.bio}</Text>
+                        </View>
                     </View>
-                </View>
+                ))}
             </View>
 
             <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.button}>
-
+                <TouchableOpacity 
+                    style={styles.button}
+                    onPress={handleDislike}
+                >
+                    <Image source={dislike} />
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style={styles.button}
+                    onPress={handleLike}
+                >
+                    <Image source={like} />
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -72,6 +100,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#f5f5f5',
         alignItems: 'center',
         justifyContent: 'space-between'
+    },
+
+    logo: {
+        marginTop: 20
     },
 
     cardsContainer: {
@@ -96,7 +128,8 @@ const styles = StyleSheet.create({
 
     avatar: {
         flex: 1,
-        height: 300
+        height: 300,
+        backgroundColor: '#ddd'
     },
 
     footer: {
