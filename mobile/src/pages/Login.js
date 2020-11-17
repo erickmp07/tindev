@@ -1,11 +1,38 @@
-import React from 'react';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Image, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import api from '../services/api';
 
 import logo from '../assets/logo.png';
 
-export default function Login() {
+export default function Login({ navigation }) {
+    const [user, setUser] = useState('');
+
+    useEffect(() => {
+        AsyncStorage.getItem('user').then(user => {
+            if (user) {
+                navigation.navigate('Main', { user });
+            }
+        });
+    }, []);
+
+    async function handleLogin() {
+        const response = await api.post('/devs', { username: user });
+
+        const { _id } = response.data;
+
+        await AsyncStorage.setItem('user', _id);
+
+        navigation.navigate('Main', { _id });
+    }
+
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView 
+            behavior="padding"
+            enabled={Platform.OS === 'ios'}
+            style={styles.container}
+        >
             <Image source={logo} />
             <TextInput
                 autoCapitalize="none"
@@ -18,7 +45,8 @@ export default function Login() {
             <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>Enviar</Text>
             </TouchableOpacity>
-        </View>
+
+        </KeyboardAvoidingView>
     );
 }
 
