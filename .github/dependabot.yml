@@ -20,3 +20,13 @@ updates:
   - erickmp07
   assignees:
   - erickmp07
+- package-ecosystem: npm
+  directory: "/mobile"
+  schedule:
+    interval: daily
+    time: "08:00"
+  open-pull-requests-limit: 10
+  reviewers:
+  - erickmp07
+  assignees:
+  - erickmp07
