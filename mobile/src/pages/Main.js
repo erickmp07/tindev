@@ -13,7 +13,7 @@ import itsamatch from '../assets/itsamatch.png';
 export default function Main({ navigation }) {
     const id = navigation.getParam('user');
     const [users, setUsers] = useState([]);
-    const [matchDev, setMatchDev] = useState(false);
+    const [matchDev, setMatchDev] = useState(null);
 
     useEffect(() => {
         async function loadUsers() {
@@ -30,7 +30,7 @@ export default function Main({ navigation }) {
     }, [id]);
 
     useEffect(() => {
-        const socket = io('http://192.168.1.73:3333', {
+        const socket = io('http://10.0.2.2:3333', {
             query: {
                 user: id
             }
@@ -39,7 +39,7 @@ export default function Main({ navigation }) {
         socket.on('match', dev => {
             setMatchDev(dev);
         });
-    });
+    }, [id]);
 
     async function handleLike() {
         const [user, ...rest] = users;
@@ -78,42 +78,48 @@ export default function Main({ navigation }) {
             </TouchableOpacity>
 
             <View style={styles.cardsContainer}>
-                {users.map((user, index) => (
-                    <View key={user._id} style={[styles.card, { zIndex: users.length - index }]}>
-                        <Image style={styles.avatar} source={{ uri: user.avatar }} />
+                {users.length === 0
+                    ? <Text style={styles.empty}>Acabou :(</Text>
+                    : (
+                        users.map((user, index) => (
+                        <View key={user._id} style={[styles.card, { zIndex: users.length - index }]}>
+                            <Image style={styles.avatar} source={{ uri: user.avatar }} />
 
-                        <View style={styles.footer}>
-                            <Text style={styles.name}>{user.name}</Text>
-                            <Text numberOfLines={3} style={styles.bio}>{user.bio}</Text>
+                            <View style={styles.footer}>
+                                <Text style={styles.name}>{user.name}</Text>
+                                <Text numberOfLines={3} style={styles.bio}>{user.bio}</Text>
+                            </View>
                         </View>
-                    </View>
-                ))}
+                    ))
+                )}
             </View>
 
-            <View style={styles.buttonsContainer}>
-                <TouchableOpacity 
-                    style={styles.button}
-                    onPress={handleDislike}
-                >
-                    <Image source={dislike} />
-                </TouchableOpacity>
-                <TouchableOpacity 
-                    style={styles.button}
-                    onPress={handleLike}
-                >
-                    <Image source={like} />
-                </TouchableOpacity>
-            </View>
+            { users.length > 0 && (
+                <View style={styles.buttonsContainer}>
+                    <TouchableOpacity 
+                        style={styles.button}
+                        onPress={handleDislike}
+                    >
+                        <Image source={dislike} />
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                        style={styles.button}
+                        onPress={handleLike}
+                    >
+                        <Image source={like} />
+                    </TouchableOpacity>
+                </View>
+            )}
 
             { matchDev && (
-                <View style={styles.matchContainer}>
+                <View style={[styles.matchContainer, { zIndex: 99999 }]}>
                     <Image style={styles.matchImage} source={itsamatch} />
                     <Image style={styles.matchAvatar} source={{ uri: matchDev.avatar }} />
 
                     <Text style={styles.matchName}>{matchDev.name}</Text>
                     <Text style={styles.matchBio}>{matchDev.bio}</Text>
 
-                    <TouchableOpacity onPress={() => setMatchDev(false)}>
+                    <TouchableOpacity onPress={() => setMatchDev(null)}>
                         <Text style={styles.closeMatch}>Close</Text>
                     </TouchableOpacity>
                 </View>
@@ -132,6 +138,13 @@ const styles = StyleSheet.create({
 
     logo: {
         marginTop: 20
+    },
+
+    empty: {
+        alignSelf: 'center',
+        color: '#999',
+        fontSize: 24,
+        fontWeight: 'bold'
     },
 
     cardsContainer: {
