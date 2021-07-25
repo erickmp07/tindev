@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import io from 'socket.io-client';
 
 import './Main.css';
@@ -62,7 +63,10 @@ export default function Main({ match }) {
 
     return (
         <div className="main-container">
-            <img src={logo} alt="Tindev" />
+            <Link to="/">
+                <img src={logo} alt="Tindev" />
+            </Link>
+
             {users.length > 0 ? (
                 <ul>
                     {users.map(user => (
@@ -96,7 +100,7 @@ export default function Main({ match }) {
                     <strong>{matchDev.name}</strong>
                     <p>{matchDev.bio}</p>
 
-                    <button type="button" onClick={() => setMatchDev(false)}>CLOSE</button>
+                    <button type="button" onClick={() => setMatchDev(null)}>CLOSE</button>
                 </div>
             )}
         </div>
